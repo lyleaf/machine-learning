@@ -1,9 +1,3 @@
-import google.datalab.storage as storage
-from google.datalab import Context
-import random, string
-from os.path import join
-import csv
-
 ## Bring to you by Yiling with collie
 ## Output should be local_eval_file and local_train_file
 # import pandas as pd
@@ -35,25 +29,29 @@ import csv
 # !head '/content/labelcsv/train.csv'
 # !head '/content/labelcsv/eval.csv'
 
-import mltoolbox.image.classification as model
-from google.datalab.ml import *
-import logging
-import datetime
+
+
+
 import mltoolbox.image.classification as model
 from google.datalab.ml import *
 import logging
 import datetime
 
-#lets get some logging going!
+
+batchsize = 30
+iterations = 5000
+local_train_file = '/content/labelcsv/train.csv'
+local_eval_file = '/content/labelcsv/eval.csv'
+preprocessed_dir = '/content/mltrain/preprocessed_dir'
+model_dir = '/content/mltrain/modelV2_dir' + "_" +str(batchsize)+ "_" + str (iterations)
+
+
 logging.getLogger().setLevel(logging.INFO)
 print("logging set")
 
-#setting up preprocess start timestamp
 pp_start_datetime = datetime.datetime.now()
 print("start: " + pp_start_datetime.strftime("%H:%M:%S"))
 
-#do the preprocessing
-preprocessed_dir = '/content/mltrain/preprocessed_dir'
 train_set = CsvDataSet(local_train_file, schema='image_url:STRING,label:STRING')  ## changed schema from img_url to image_url
 model.preprocess(train_set, preprocessed_dir)
 
@@ -65,20 +63,10 @@ print("start: " + pp_start_datetime.strftime("%H:%M:%S"))
 print("end: " + pp_end_datetime.strftime("%H:%M:%S"))
 print("duration: " + str((pp_end_datetime-pp_start_datetime).total_seconds()/60) + " minutes")
 
-batchsize = 30
-iterations = 30000
-import mltoolbox.image.classification as model
-from google.datalab.ml import *
-import logging
-import datetime
-model_dir = '/content/mltrain/modelV2_dir' + "_" +str(batchsize)+ "_" + str (iterations)
-preprocessed_dir = '/content/mltrain/preprocessed_dir'
-
 #setting up preprocess start timestamp
 pp_start_datetime = datetime.datetime.now()
 print("start: " + pp_start_datetime.strftime("%H:%M:%S"))
 
-import logging
 logging.getLogger().setLevel(logging.INFO)
 model.train(preprocessed_dir, batchsize, iterations, model_dir)
 logging.getLogger().setLevel(logging.WARNING)
